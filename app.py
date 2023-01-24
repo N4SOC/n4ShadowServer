@@ -38,4 +38,5 @@ for report in listReports():
         if "ip" in device:
             device['scan'] = report['type']
             deviceJSON = json.dumps(device)
-            la.sendtoAzure(deviceJSON)
+            # la.sendtoAzure(deviceJSON) # Not working?
+            print(deviceJSON) # Remove for prod
