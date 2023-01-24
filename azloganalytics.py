@@ -42,7 +42,7 @@ class LogAnalytics:
         if (response.status_code >= 200 and response.status_code <= 299):
             print('Accepted')
         else:
-            print("Response code: " + str(response.status_code))
+            print("Response code: " + str(response.status_code) + ' ' + response.text)
 
     def sendtoAzure(self,data):
         body = json.dumps(data)
