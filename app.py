@@ -4,8 +4,13 @@ import json
 import hmac
 import hashlib
 
+import azloganalytics
+
+la = azloganalytics.LogAnalytics(config.azID, config.azSecret, "shadowserver")
+
+
 def listReports():
-    req = {"id": "test:scan_vnc", "limit": 5, "apikey": f"{config.key}"}
+    req = {"id": "", "limit": 5, "apikey": f"{config.key}"}
     url = 'https://transform.shadowserver.org/api2/reports/list'
     request_string = json.dumps(req)
 
@@ -18,6 +23,7 @@ def listReports():
     resp = requests.post(url, json=req, headers={"HMAC2": hmac2})
 
     return resp.json()
+
 
 def downloadReport(reportID):
     req = {"id": reportID, "limit": 5, "apikey": f"{config.key}"}
@@ -34,11 +40,11 @@ def downloadReport(reportID):
 
     return resp.json()
 
+
 for report in listReports():
     print(report['type'])
-    reportContent=downloadReport(report['id'])
+    reportContent = downloadReport(report['id'])
     for device in reportContent:
         if "ip" in device:
-            print(device['ip'])
-        else:
-            print("No IP for device")
+            deviceJSON = {}
+            la.sendtoAzure(deviceJSON)
