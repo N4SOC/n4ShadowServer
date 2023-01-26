@@ -19,24 +19,29 @@ def genHMAC(secret, request): # Generate SHA256 HMAC from request & secret
 
 
 def listReports(): #Get list of available reports
-    req = {"id": "", "limit": 5, "apikey": f"{config.key}"}
+    req = {"id": "", "limit": 100, "apikey": f"{config.key}"}
     url = 'https://transform.shadowserver.org/api2/reports/list'
     resp = requests.post(url, json=req, headers={"HMAC2": genHMAC(secret=config.secret, request=req)})
     return resp.json()
 
 
 def downloadReport(reportID): # Retreive data from specified report
-    req = {"id": reportID, "limit": 5, "apikey": f"{config.key}"}
+    req = {"id": reportID, "limit": 5000, "apikey": f"{config.key}"}
     url = 'https://transform.shadowserver.org/api2/reports/download'
     resp = requests.post(url, json=req, headers={"HMAC2": genHMAC(secret=config.secret, request=req)})
     return resp.json()
 
 
 for report in listReports():
-    reportContent = downloadReport(report['id'])
-    for device in reportContent:
-        if "ip" in device:
-            device['scan'] = report['type']
-            deviceJSON = json.dumps(device)
-            # la.sendtoAzure(deviceJSON) # Not working?
-            print(deviceJSON) # Remove for prod
+    if report['type']!="device_id":
+        reportContent = downloadReport(report['id'])
+        print(f"Report: {report['type']} - Records: {len(reportContent)}")
+        if len(reportContent)==5000:
+            print("** LIMIT REACHED - Results Truncated")
+        for device in reportContent:
+            if "ip" in device:
+                device['scan'] = report['type']
+                deviceJSON = []
+                deviceJSON.append(device)
+                la.sendtoAzure(deviceJSON) # Not working?
+                # print(deviceJSON) # Remove for prod
