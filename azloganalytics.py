@@ -40,7 +40,8 @@ class LogAnalytics:
 
         response = requests.post(uri,json=body, headers=headers)
         if (response.status_code >= 200 and response.status_code <= 299):
-            print('Accepted')
+            # print('Accepted')
+            pass
         else:
             print("Response code: " + str(response.status_code) + ' ' + response.text)
 
