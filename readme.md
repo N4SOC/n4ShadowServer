@@ -18,5 +18,3 @@ API Documentation: https://github.com/The-Shadowserver-Foundation/api_utils
 
 ## Todo
 + Implement IPAM lookup  
-+ Fix Sentinel integration  
-+ Track changes
