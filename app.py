@@ -3,11 +3,13 @@ import requests
 import json
 import hmac
 import hashlib
+import ipaddress
 
 import azloganalytics
 
 la = azloganalytics.LogAnalytics(config.azID, config.azSecret, "shadowserver")  # Create log analytics object with creds & table
 
+subnets=True
 
 def genHMAC(secret, request):  # Generate SHA256 HMAC from request & secret
     request_string = json.dumps(request)
@@ -30,7 +32,21 @@ def downloadReport(reportID):  # Retreive data from specified report
     url = 'https://transform.shadowserver.org/api2/reports/download'
     resp = requests.post(url, json=req, headers={"HMAC2": genHMAC(secret=config.secret, request=req)})
     return resp.json()
+ 
+def initIPAM()
+    global subnets
+    url='https://ipam.node4.co.uk/api/securityteam/sections/3/subnets/'
+    authheader={'phpipam-token':config.ipamToken} 
+    subnets=requests.get(url,headers=authheader).json()['data']
+    print("IPAM Data downloaded...")
 
+def getDescription(ip) 
+    myIPAddress=ipaddress.ip_address(ip)
+    matchingSubnets = [i for i in subnets if myIPAddress in ipaddress.ip_network(i['subnet']+'/'+i['mask'])]
+    smallestSubnet = sorted(matchingSubnets, reverse=True, key=lambda d: d['mask'])[0]
+    return smallestSubnet['description']
+
+initIPAM()
 
 for report in listReports():
     if report['type'] != "device_id":
@@ -41,6 +57,8 @@ for report in listReports():
         for device in reportContent:
             if "ip" in device:
                 device['scan'] = report['type']
+                device['subnet_description'] = getDescription(device['ip'])
                 deviceJSON = []
                 deviceJSON.append(device)
                 la.sendtoAzure(deviceJSON)
+
