@@ -30,8 +30,14 @@ def downloadReport(reportID):  # Retreive data from specified report
     req = {"id": reportID, "limit": 10000, "apikey": f"{config.key}"}
     url = "https://transform.shadowserver.org/api2/reports/download"
     resp = requests.post(url, json=req, headers={"HMAC2": genHMAC(secret=config.secret, request=req)})
-    print(f"Downloaded Report: {reportID} | {len(resp.json())}")
-    return resp.json()
+    try:
+        reportData=resp.json()
+    except:
+        print(f"JSON Parsing Error: {resp.content}")
+        reportData=[]
+
+    print(f"Downloaded Report: {reportID} | {len(reportData)}")
+    return reportData
 
 
 def initIPAM():
@@ -86,8 +92,7 @@ try:
     initIPAM()
 except:
     print("Cannot reach IPAM")
-    subnets = True
-
+    subnets = []
 
 reportList = listReports()
 print(f"Found {len(reportList)} scans")
