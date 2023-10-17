@@ -45,7 +45,10 @@ def initIPAM():
 
 
 def getDescription(ip):
-    myIPAddress = ipaddress.ip_address(ip)
+    if "/" in ip:
+        myIPAddress = ipaddress.IPv4Network(ip)
+    else:
+        myIPAddress = ipaddress.ip_address(ip)
     matchingSubnets = [i for i in subnets if myIPAddress in ipaddress.ip_network(i["subnet"] + "/" + i["mask"])]
     try:
         smallestSubnet = sorted(matchingSubnets, reverse=True, key=lambda d: d["mask"])[0]
