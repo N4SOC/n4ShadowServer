@@ -5,6 +5,7 @@ import hmac
 import hashlib
 import ipaddress
 import threading
+import datetime
 
 import azloganalytics
 
@@ -20,7 +21,8 @@ def genHMAC(secret, request):  # Generate SHA256 HMAC from request & secret
 
 
 def listReports():  # Get list of available reports
-    req = {"id": "", "limit": 100, "date": "2023-10-16", "apikey": f"{config.key}"}
+    reportDate=datetime.datetime.now()-datetime.timedelta(1) # yesterday
+    req = {"id": "", "limit": 100, "date": reportDate.strftime('%Y-%m-%d'), "apikey": f"{config.key}"}
     url = "https://transform.shadowserver.org/api2/reports/list"
     resp = requests.post(url, json=req, headers={"HMAC2": genHMAC(secret=config.secret, request=req)})
     return resp.json()
