@@ -4,6 +4,7 @@ import json
 import hmac
 import hashlib
 import ipaddress
+import threading
 
 import azloganalytics
 
@@ -57,9 +58,10 @@ def getDescription(ip):
     print(smallestSubnet['description'])
     return smallestSubnet['description']
 
-initIPAM()#
+initIPAM()
 
-for report in listReports():
+
+def getScanData(scan):
     if report['type'] != "device_id":
         reportContent = downloadReport(report['id'])
         print(f"Report: {report['type']} - Records: {len(reportContent)}")
@@ -72,4 +74,15 @@ for report in listReports():
                 deviceJSON = []
                 deviceJSON.append(device)
                 la.sendtoAzure(deviceJSON)
+
+
+threads = []
+
+for report in listReports():
+    t = threading.Thread(target=getScanData, args=(report,))
+    threads.append(t)
+    t.start()
+
+for t in threads:
+    t.join()
 
