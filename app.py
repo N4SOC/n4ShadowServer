@@ -30,7 +30,7 @@ def listReports():  # Get list of available reports
 
 
 def downloadReport(reportID):  # Retreive data from specified report
-    req = {"id": reportID, "limit": 5000, "apikey": f"{config.key}"}
+    req = {"id": reportID, "limit": 10000, "apikey": f"{config.key}"}
     url = "https://transform.shadowserver.org/api2/reports/download"
     resp = requests.post(url, json=req, headers={"HMAC2": genHMAC(secret=config.secret, request=req)})
     return resp.json()
@@ -62,8 +62,8 @@ def getScanData(scan):
     if report["type"] != "device_id":
         reportContent = downloadReport(report["id"])
         print(f"Report: {report['type']} - Records: {len(reportContent)}")
-        if len(reportContent) == 5000:
-            print("** LIMIT REACHED - Results Truncated")
+        if len(reportContent) == 10000:
+            print("** 10k LIMIT REACHED - Results Truncated")
         for device in reportContent:
             if "ip" in device:
                 device["scan"] = report["type"]
