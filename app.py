@@ -81,6 +81,7 @@ reportList=listReports()
 print(f"Found {len(reportList)} scans")
 
 for report in reportList:
+    print(f"Report: {report['type']}")
     t = threading.Thread(target=getScanData, args=(report,))
     threads.append(t)
     t.start()
