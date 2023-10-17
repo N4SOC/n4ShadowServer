@@ -77,7 +77,10 @@ def getScanData(scan):
 
 threads = []
 
-for report in listReports():
+reportList=listReports()
+print(f"Found {len(reportList)} scans")
+
+for report in reportList:
     t = threading.Thread(target=getScanData, args=(report,))
     threads.append(t)
     t.start()
