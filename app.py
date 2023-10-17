@@ -51,7 +51,6 @@ def getDescription(ip):
         smallestSubnet = sorted(matchingSubnets, reverse=True, key=lambda d: d["mask"])[0]
     except:
         smallestSubnet = {"description": "not found"}
-    print(smallestSubnet["description"])
     return smallestSubnet["description"]
 
 
