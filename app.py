@@ -40,13 +40,24 @@ def initIPAM()
     subnets=requests.get(url,headers=authheader).json()['data']
     print("IPAM Data downloaded...")
 
-def getDescription(ip) 
+def initIPAM():
+    global subnets
+    url='https://ipam.node4.co.uk/api/securityteam/sections/3/subnets/'
+    authheader={'phpipam-token':config.ipamToken}
+    subnets=requests.get(url,headers=authheader).json()['data']
+    print("IPAM Data downloaded...")
+
+def getDescription(ip):
     myIPAddress=ipaddress.ip_address(ip)
     matchingSubnets = [i for i in subnets if myIPAddress in ipaddress.ip_network(i['subnet']+'/'+i['mask'])]
-    smallestSubnet = sorted(matchingSubnets, reverse=True, key=lambda d: d['mask'])[0]
+    try:
+        smallestSubnet = sorted(matchingSubnets, reverse=True, key=lambda d: d['mask'])[0]
+    except:
+        smallestSubnet={'description':'not found'}
+    print(smallestSubnet['description'])
     return smallestSubnet['description']
 
-initIPAM()
+initIPAM()#
 
 for report in listReports():
     if report['type'] != "device_id":
